@@ -11,6 +11,7 @@ from utils.config import TIMEOUT, USER_AGENT
 from scanner.headers import check_security_headers, display_headers
 from scanner.ssl_checker import analyze_ssl, display_ssl
 from scanner.cookies import analyze_cookies, display_cookies
+from scanner.csp import analyze_csp, display_csp
 
 console = Console()
 
@@ -81,6 +82,12 @@ def main():
 # -----------------------------
     cookies = analyze_cookies(response)
     display_cookies(cookies)
+
+    print()
+
+    csp = analyze_csp(response)
+
+    display_csp(csp)
 
     console.print("\n[bold green]Security Assessment Completed![/bold green]")
 

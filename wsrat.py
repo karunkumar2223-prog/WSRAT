@@ -12,6 +12,7 @@ from scanner.headers import check_security_headers, display_headers
 from scanner.ssl_checker import analyze_ssl, display_ssl
 from scanner.cookies import analyze_cookies, display_cookies
 from scanner.csp import analyze_csp, display_csp
+from scanner.http_versions import (analyze_http_versions,display_http_versions,)
 
 console = Console()
 
@@ -91,6 +92,11 @@ def main():
 
     console.print("\n[bold green]Security Assessment Completed![/bold green]")
 
+    print()
+
+    versions = analyze_http_versions(args.url)
+
+    display_http_versions(versions)
 
 if __name__ == "__main__":
     main()

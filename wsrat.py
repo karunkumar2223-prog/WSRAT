@@ -1,14 +1,16 @@
 import argparse
+from urllib import response
 import requests
 from rich.console import Console
 from rich.panel import Panel
 
+from scanner import cookies
 from utils.banner import print_banner
 from utils.helpers import validate_url
 from utils.config import TIMEOUT, USER_AGENT
 from scanner.headers import check_security_headers, display_headers
 from scanner.ssl_checker import analyze_ssl, display_ssl
-
+from scanner.cookies import analyze_cookies, display_cookies
 
 console = Console()
 
@@ -70,10 +72,18 @@ def main():
         ssl_result = analyze_ssl(args.url)
         display_ssl(ssl_result)
     else:
-        console.print("[yellow]Skipping SSL analysis (HTTP target)[/yellow]")
+     console.print("[yellow]Skipping SSL analysis (HTTP target)[/yellow]")
 
-        console.print("\n[yellow]Security assessment completed.[/yellow]")
+    print()
+
+# -----------------------------
+# Cookie Security Analysis
+# -----------------------------
+    cookies = analyze_cookies(response)
+    display_cookies(cookies)
+
+    console.print("\n[bold green]Security Assessment Completed![/bold green]")
 
 
 if __name__ == "__main__":
-            main()
+    main()

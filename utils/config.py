@@ -1,0 +1,9 @@
+"""
+WSRAT Configuration
+"""
+
+TIMEOUT = 10
+
+MAX_THREADS = 10
+
+USER_AGENT = "WSRAT/1.0"

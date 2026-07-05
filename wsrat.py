@@ -7,6 +7,8 @@ from utils.banner import print_banner
 from utils.helpers import validate_url
 from utils.config import TIMEOUT, USER_AGENT
 from scanner.headers import check_security_headers, display_headers
+from scanner.ssl_checker import analyze_ssl, display_ssl
+
 
 console = Console()
 
@@ -60,11 +62,18 @@ def main():
     response = check_target(args.url)
 
     results = check_security_headers(response)
-
     display_headers(results)
 
-    console.print("\n[yellow]Starting security assessment...[/yellow]")
+    print()
+
+    if args.url.startswith("https://"):
+        ssl_result = analyze_ssl(args.url)
+        display_ssl(ssl_result)
+    else:
+        console.print("[yellow]Skipping SSL analysis (HTTP target)[/yellow]")
+
+        console.print("\n[yellow]Security assessment completed.[/yellow]")
 
 
 if __name__ == "__main__":
-    main()
+            main()

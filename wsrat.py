@@ -6,6 +6,7 @@ from rich.panel import Panel
 from utils.banner import print_banner
 from utils.helpers import validate_url
 from utils.config import TIMEOUT, USER_AGENT
+from scanner.headers import check_security_headers, display_headers
 
 console = Console()
 
@@ -56,7 +57,11 @@ def main():
         )
     )
 
-    check_target(args.url)
+    response = check_target(args.url)
+
+    results = check_security_headers(response)
+
+    display_headers(results)
 
     console.print("\n[yellow]Starting security assessment...[/yellow]")
 

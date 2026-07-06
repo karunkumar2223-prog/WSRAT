@@ -14,7 +14,7 @@ from scanner.cookies import analyze_cookies, display_cookies
 from scanner.csp import analyze_csp, display_csp
 from scanner.http_versions import (analyze_http_versions,display_http_versions,)
 from scanner.missing_headers import (analyze_missing_headers,display_missing_headers,)
-
+from scanner.tech import (analyze_technology,display_technology,)
 console = Console()
 
 
@@ -97,7 +97,7 @@ def main():
     console.print("\n[bold green]Security Assessment Completed![/bold green]")
 
 # -----------------------------
-# HTTP Analysis
+# HTTP Versions Analysis
 # -----------------------------
     print()
 
@@ -110,6 +110,13 @@ def main():
     missing = analyze_missing_headers(response)
 
     display_missing_headers(missing)
+
+    print()
+
+    technology = analyze_technology(response)
+
+    display_technology(technology)
+
 
 if __name__ == "__main__":
     main()

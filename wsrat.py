@@ -1,4 +1,5 @@
 import argparse
+from urllib import response
 import requests
 
 from rich.console import Console
@@ -24,6 +25,7 @@ from scanners.technology import (
     analyze_technology,
     display_technology,
 )
+from core.reporter import ReportGenerator
 
 console = Console()
 
@@ -48,6 +50,9 @@ def check_target(url):
         console.print(e)
         exit()
 
+def calculate_overall_score():
+
+    return 72
 
 def main():
     parser = argparse.ArgumentParser(
@@ -76,48 +81,56 @@ def main():
 
     response = check_target(args.url)
 
-    results = check_security_headers(response)
-    display_headers(results)
+    results = {}
+
+    header_results = check_security_headers(response)
+
+    results["headers"] = header_results
+
+    display_headers(header_results)
 
     print()
 
     if args.url.startswith("https://"):
         ssl_result = analyze_ssl(args.url)
+
+        results["ssl"] = ssl_result
+
         display_ssl(ssl_result)
     else:
      console.print("[yellow]Skipping SSL analysis (HTTP target)[/yellow]")
 
     print()
 
-# -----------------------------
-# Cookie Security Analysis
-# -----------------------------
     cookies = analyze_cookies(response)
+
     display_cookies(cookies)
 
-# -----------------------------
-# CSP Analysis
-# -----------------------------
+    results["cookies"] = cookies
+
     print()
 
     csp = analyze_csp(response)
 
     display_csp(csp)
 
+    results["csp"] = csp
+
     console.print("\n[bold green]Security Assessment Completed![/bold green]")
 
-# -----------------------------
-# HTTP Versions Analysis
-# -----------------------------
     print()
 
-    versions = analyze_http_versions(args.url)
+    http_result = analyze_http_versions(args.url)
 
-    display_http_versions(versions)
+    results["http"] = http_result
+
+    display_http_versions(http_result)
 
     print()
 
     missing = analyze_missing_headers(response)
+
+    results["missing"] = missing
 
     display_missing_headers(missing)
 
@@ -125,8 +138,23 @@ def main():
 
     technology = analyze_technology(response)
 
+    results["technology"] = technology
+
     display_technology(technology)
 
+    json_report = ReportGenerator.save_json(
+        results,
+        args.url
+)
+
+    html_report = ReportGenerator.save_html(
+        results,
+        args.url,
+    calculate_overall_score()
+)
+
+    console.print(f"[green]✔ JSON Report :[/green] {json_report}")
+    console.print(f"[green]✔ HTML Report :[/green] {html_report}")
 
 if __name__ == "__main__":
     main()

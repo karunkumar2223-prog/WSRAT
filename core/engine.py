@@ -1,21 +1,39 @@
 from rich.console import Console
+from rich.progress import Progress
 
 console = Console()
 
 
 class ScanEngine:
-    def __init__(self, url):
-        self.url = url
+
+    def __init__(self):
+
         self.results = {}
 
-    def add_result(self, module, result):
-        self.results[module] = result
+    def run_module(self, name, function, *args):
 
-    def get_results(self):
-        return self.results
+        try:
+
+            result = function(*args)
+
+            self.results[name] = result
+
+            return result
+
+        except Exception as e:
+
+            self.results[name] = str(e)
+
+            return None
 
     def summary(self):
-        console.print("\n[bold green]Modules Executed:[/bold green]")
+
+        console.print()
+
+        console.rule("[bold green]Executed Modules[/bold green]")
 
         for module in self.results:
-            console.print(f"[green]✔[/green] {module}")
+
+            console.print(f"✔ {module}")
+
+        console.rule()

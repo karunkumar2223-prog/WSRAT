@@ -13,6 +13,7 @@ from scanner.ssl_checker import analyze_ssl, display_ssl
 from scanner.cookies import analyze_cookies, display_cookies
 from scanner.csp import analyze_csp, display_csp
 from scanner.http_versions import (analyze_http_versions,display_http_versions,)
+from scanner.missing_headers import (analyze_missing_headers,display_missing_headers,)
 
 console = Console()
 
@@ -84,6 +85,9 @@ def main():
     cookies = analyze_cookies(response)
     display_cookies(cookies)
 
+# -----------------------------
+# CSP Analysis
+# -----------------------------
     print()
 
     csp = analyze_csp(response)
@@ -92,11 +96,20 @@ def main():
 
     console.print("\n[bold green]Security Assessment Completed![/bold green]")
 
+# -----------------------------
+# HTTP Analysis
+# -----------------------------
     print()
 
     versions = analyze_http_versions(args.url)
 
     display_http_versions(versions)
+
+    print()
+
+    missing = analyze_missing_headers(response)
+
+    display_missing_headers(missing)
 
 if __name__ == "__main__":
     main()

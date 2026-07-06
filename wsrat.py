@@ -1,20 +1,30 @@
 import argparse
-from urllib import response
 import requests
+
 from rich.console import Console
 from rich.panel import Panel
 
-from scanner import cookies
 from utils.banner import print_banner
 from utils.helpers import validate_url
 from utils.config import TIMEOUT, USER_AGENT
-from scanner.headers import check_security_headers, display_headers
-from scanner.ssl_checker import analyze_ssl, display_ssl
-from scanner.cookies import analyze_cookies, display_cookies
-from scanner.csp import analyze_csp, display_csp
-from scanner.http_versions import (analyze_http_versions,display_http_versions,)
-from scanner.missing_headers import (analyze_missing_headers,display_missing_headers,)
-from scanner.tech import (analyze_technology,display_technology,)
+
+from scanners.headers import check_security_headers, display_headers
+from scanners.ssl import analyze_ssl, display_ssl
+from scanners.cookies import analyze_cookies, display_cookies
+from scanners.csp import analyze_csp, display_csp
+from scanners.http_versions import (
+    analyze_http_versions,
+    display_http_versions,
+)
+from scanners.missing_headers import (
+    analyze_missing_headers,
+    display_missing_headers,
+)
+from scanners.technology import (
+    analyze_technology,
+    display_technology,
+)
+
 console = Console()
 
 

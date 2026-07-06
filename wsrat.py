@@ -50,9 +50,32 @@ def check_target(url):
         console.print(e)
         exit()
 
-def calculate_overall_score():
+def calculate_overall_score(results):
 
-    return 72
+    scores = []
+
+    if "headers" in results:
+        scores.append(83)
+
+    if "ssl" in results:
+        scores.append(100)
+
+    if "cookies" in results:
+        scores.append(85)
+
+    if "csp" in results:
+        scores.append(70)
+
+    if "http" in results:
+        scores.append(100)
+
+    if "missing_headers" in results:
+        scores.append(55)
+
+    if "technology" in results:
+        scores.append(20)
+
+    return int(sum(scores)/len(scores))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -150,8 +173,8 @@ def main():
     html_report = ReportGenerator.save_html(
         results,
         args.url,
-    calculate_overall_score()
-)
+        calculate_overall_score(results)
+    )
 
     console.print(f"[green]✔ JSON Report :[/green] {json_report}")
     console.print(f"[green]✔ HTML Report :[/green] {html_report}")

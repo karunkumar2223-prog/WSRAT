@@ -1,5 +1,7 @@
 import argparse
+from tracemalloc import start
 import requests
+import time
 
 from rich.console import Console
 from rich.panel import Panel
@@ -37,6 +39,8 @@ def check_target(url):
 
 
 def main():
+
+    start = time.time()
 
     parser = argparse.ArgumentParser(
         description="Web Security Recon & Assessment Toolkit"
@@ -94,9 +98,13 @@ def main():
         overall_score,
     )
 
+
     console.print(f"\n[green]✔ JSON Report:[/green] {json_report}")
     console.print(f"[green]✔ HTML Report:[/green] {html_report}")
 
+    end = time.time()
+
+    duration = end - start
 
 if __name__ == "__main__":
     main()

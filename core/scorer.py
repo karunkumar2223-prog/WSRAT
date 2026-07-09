@@ -1,32 +1,16 @@
-class SecurityScore:
+class OverallScore:
 
-    def __init__(self):
+    @staticmethod
+    def calculate(results):
 
-        self.modules = {}
+        scores = []
 
-    def add(self, module, score):
+        for value in results.values():
 
-        self.modules[module] = score
+            if isinstance(value, dict) and "score" in value:
+                scores.append(value["score"])
 
-    def overall(self):
-
-        if len(self.modules) == 0:
-
+        if not scores:
             return 0
 
-        return int(sum(self.modules.values()) / len(self.modules))
-
-    def risk(self):
-
-        score = self.overall()
-
-        if score >= 90:
-            return "LOW"
-
-        elif score >= 75:
-            return "MEDIUM"
-
-        elif score >= 50:
-            return "HIGH"
-
-        return "CRITICAL"
+        return round(sum(scores) / len(scores))

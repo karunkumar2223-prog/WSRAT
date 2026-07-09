@@ -1,39 +1,98 @@
-from rich.console import Console
-from rich.progress import Progress
-
-console = Console()
+from scanners.headers import check_security_headers, display_headers
+from scanners.ssl import analyze_ssl, display_ssl
+from scanners.cookies import analyze_cookies, display_cookies
+from scanners.csp import analyze_csp, display_csp
+from scanners.http_versions import analyze_http_versions, display_http_versions
+from scanners.missing_headers import analyze_missing_headers, display_missing_headers
+from scanners.technology import analyze_technology, display_technology
+from concurrent.futures import ThreadPoolExecutor
+from scanners.subdomains import analyze_subdomains, display_subdomains
 
 
 class ScanEngine:
 
-    def __init__(self):
+    def __init__(self, url, response):
+        self.url = url
+        self.response = response
 
-        self.results = {}
+    def run(self):
 
-    def run_module(self, name, function, *args):
+        results = {}
 
-        try:
+        with ThreadPoolExecutor(max_workers=6) as executor:
 
-            result = function(*args)
+            futures = {}
 
-            self.results[name] = result
+            futures["headers"] = executor.submit(
+                check_security_headers,
+                self.response
+            )
 
-            return result
+            futures["cookies"] = executor.submit(
+                analyze_cookies,
+                self.response,
+            )
 
-        except Exception as e:
+            futures["csp"] = executor.submit(
+                analyze_csp,
+                self.response,
+            )
 
-            self.results[name] = str(e)
+            futures["http"] = executor.submit(
+                analyze_http_versions,
+                self.url,
+            )
 
-            return None
+            futures["missing_headers"] = executor.submit(
+                analyze_missing_headers,
+                self.response,
+            )
 
-    def summary(self):
+            futures["technology"] = executor.submit(
+                analyze_technology,
+                self.response,
+            )
 
-        console.print()
+            futures["subdomains"] = executor.submit(
+                analyze_subdomains,
+                self.url,
+            )
 
-        console.rule("[bold green]Executed Modules[/bold green]")
+            if self.url.startswith("https://"):
+                futures["ssl"] = executor.submit(
+                    analyze_ssl,
+                    self.url,
+                )
 
-        for module in self.results:
+            for name, future in futures.items():
+                results[name] = future.result()
 
-            console.print(f"✔ {module}")
+        return results
+    
 
-        console.rule()
+
+    def display(self, results):
+
+        display_headers(results["headers"])
+        print()
+
+        if "ssl" in results:
+            display_ssl(results["ssl"])
+            print()
+
+        display_cookies(results["cookies"])
+        print()
+
+        display_csp(results["csp"])
+        print()
+
+        display_http_versions(results["http"])
+        print()
+
+        display_missing_headers(results["missing_headers"])
+        print()
+
+        display_subdomains(results["subdomains"])
+        print()
+
+        display_technology(results["technology"])

@@ -1,12 +1,46 @@
-from scanners.headers import check_security_headers, display_headers
-from scanners.ssl import analyze_ssl, display_ssl
-from scanners.cookies import analyze_cookies, display_cookies
-from scanners.csp import analyze_csp, display_csp
-from scanners.http_versions import analyze_http_versions, display_http_versions
-from scanners.missing_headers import analyze_missing_headers, display_missing_headers
-from scanners.technology import analyze_technology, display_technology
 from concurrent.futures import ThreadPoolExecutor
-from scanners.subdomains import analyze_subdomains, display_subdomains
+
+from scanners.headers import (
+    check_security_headers,
+    display_headers,
+)
+from scanners.ssl import (
+    analyze_ssl,
+    display_ssl,
+)
+from scanners.cookies import (
+    analyze_cookies,
+    display_cookies,
+)
+from scanners.csp import (
+    analyze_csp,
+    display_csp,
+)
+from scanners.http_versions import (
+    analyze_http_versions,
+    display_http_versions,
+)
+from scanners.missing_headers import (
+    analyze_missing_headers,
+    display_missing_headers,
+)
+from scanners.technology import (
+    analyze_technology,
+    display_technology,
+)
+from scanners.subdomains import (
+    analyze_subdomains,
+    display_subdomains,
+)
+from scanners.directory import (
+    analyze_directories,
+    display_directories,
+)
+
+from scanners.dns import (
+    analyze_dns,
+    display_dns,
+)
 
 
 class ScanEngine:
@@ -19,13 +53,13 @@ class ScanEngine:
 
         results = {}
 
-        with ThreadPoolExecutor(max_workers=6) as executor:
+        with ThreadPoolExecutor(max_workers=8) as executor:
 
             futures = {}
 
             futures["headers"] = executor.submit(
                 check_security_headers,
-                self.response
+                self.response,
             )
 
             futures["cookies"] = executor.submit(
@@ -58,6 +92,16 @@ class ScanEngine:
                 self.url,
             )
 
+            futures["directories"] = executor.submit(
+                analyze_directories,
+                self.url,
+            )
+
+            futures["dns"] = executor.submit(
+                analyze_dns,
+                self.url,
+            )
+
             if self.url.startswith("https://"):
                 futures["ssl"] = executor.submit(
                     analyze_ssl,
@@ -68,8 +112,6 @@ class ScanEngine:
                 results[name] = future.result()
 
         return results
-    
-
 
     def display(self, results):
 
@@ -95,4 +137,11 @@ class ScanEngine:
         display_subdomains(results["subdomains"])
         print()
 
+        display_directories(results["directories"])
+        print()
+
         display_technology(results["technology"])
+        print()
+
+        display_dns(results["dns"])
+        print()

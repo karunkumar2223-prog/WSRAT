@@ -1,0 +1,14 @@
+admin
+login
+dashboard
+api
+config
+uploads
+images
+backup
+robots.txt
+sitemap.xml
+.git
+.env
+phpinfo.php
+server-status

@@ -56,6 +56,11 @@ from scanners.portscanner import (
 )
 
 
+from scanners.crawler import (
+    analyze_crawler,
+    display_crawler,
+)
+
 class ScanEngine:
 
     def __init__(self, url, response):
@@ -120,6 +125,12 @@ class ScanEngine:
                 self.url,
             )
 
+
+            futures["crawler"] = executor.submit(
+                analyze_crawler,
+                self.url,
+            )
+
             if self.url.startswith("https://"):
                 futures["ssl"] = executor.submit(
                     analyze_ssl,
@@ -165,4 +176,7 @@ class ScanEngine:
         print()
 
         display_ports(results["ports"])
+        print()
+
+        display_crawler(results["crawler"])
         print()

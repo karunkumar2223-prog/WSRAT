@@ -4,34 +4,42 @@ from scanners.headers import (
     check_security_headers,
     display_headers,
 )
+
 from scanners.ssl import (
     analyze_ssl,
     display_ssl,
 )
+
 from scanners.cookies import (
     analyze_cookies,
     display_cookies,
 )
+
 from scanners.csp import (
     analyze_csp,
     display_csp,
 )
+
 from scanners.http_versions import (
     analyze_http_versions,
     display_http_versions,
 )
+
 from scanners.missing_headers import (
     analyze_missing_headers,
     display_missing_headers,
 )
+
 from scanners.technology import (
     analyze_technology,
     display_technology,
 )
+
 from scanners.subdomains import (
     analyze_subdomains,
     display_subdomains,
 )
+
 from scanners.directory import (
     analyze_directories,
     display_directories,
@@ -40,6 +48,11 @@ from scanners.directory import (
 from scanners.dns import (
     analyze_dns,
     display_dns,
+)
+
+from scanners.portscanner import (
+    analyze_ports,
+    display_ports,
 )
 
 
@@ -102,6 +115,11 @@ class ScanEngine:
                 self.url,
             )
 
+            futures["ports"] = executor.submit(
+                analyze_ports,
+                self.url,
+            )
+
             if self.url.startswith("https://"):
                 futures["ssl"] = executor.submit(
                     analyze_ssl,
@@ -144,4 +162,7 @@ class ScanEngine:
         print()
 
         display_dns(results["dns"])
+        print()
+
+        display_ports(results["ports"])
         print()

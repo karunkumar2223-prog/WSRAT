@@ -61,6 +61,11 @@ from scanners.crawler import (
     display_crawler,
 )
 
+from scanners.javascript import (
+    analyze_js,
+    display_js,
+)
+
 class ScanEngine:
 
     def __init__(self, url, response):
@@ -131,6 +136,7 @@ class ScanEngine:
                 self.url,
             )
 
+
             if self.url.startswith("https://"):
                 futures["ssl"] = executor.submit(
                     analyze_ssl,
@@ -140,7 +146,11 @@ class ScanEngine:
             for name, future in futures.items():
                 results[name] = future.result()
 
-        return results
+            results["javascript"] = analyze_js(
+            results["crawler"]["javascript"]
+            )
+            
+            return results
 
     def display(self, results):
 
@@ -179,4 +189,7 @@ class ScanEngine:
         print()
 
         display_crawler(results["crawler"])
+        print()
+
+        display_js(results["javascript"])
         print()

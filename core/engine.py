@@ -66,6 +66,11 @@ from scanners.javascript import (
     display_js,
 )
 
+from scanners.sensitivefiles import (
+    analyze_sensitive_files,
+    display_sensitive_files,
+)
+
 class ScanEngine:
 
     def __init__(self, url, response):
@@ -136,6 +141,11 @@ class ScanEngine:
                 self.url,
             )
 
+            futures["sensitive"] = executor.submit(
+            analyze_sensitive_files,
+            self.url,
+        )
+
 
             if self.url.startswith("https://"):
                 futures["ssl"] = executor.submit(
@@ -149,7 +159,7 @@ class ScanEngine:
             results["javascript"] = analyze_js(
             results["crawler"]["javascript"]
             )
-            
+
             return results
 
     def display(self, results):
@@ -192,4 +202,7 @@ class ScanEngine:
         print()
 
         display_js(results["javascript"])
+        print()
+
+        display_sensitive_files(results["sensitive"])
         print()

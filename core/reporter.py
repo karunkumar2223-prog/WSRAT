@@ -1,9 +1,10 @@
 import json
 import os
-from datetime import datetime
 
 from jinja2 import Environment, FileSystemLoader
 from urllib.parse import urlparse
+
+from core.pdf_report import create_pdf_report
 
 
 class ReportGenerator:
@@ -39,14 +40,27 @@ class ReportGenerator:
 
         html = template.render(
             target=target,
-            generated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             score=score,
-            results=results
+            results=results,
+            total_modules=len(results),
         )
 
-        filepath = f"reports/html/{filename}.html"
+        html_path = f"reports/html/{filename}.html"
 
-        with open(filepath, "w", encoding="utf-8") as file:
+        with open(html_path, "w", encoding="utf-8") as file:
             file.write(html)
 
-        return filepath
+        print(f"\n✔ HTML Report : {html_path}")
+
+        json_path = ReportGenerator.save_json(results, target)
+        print(f"✔ JSON Report : {json_path}")
+
+        try:
+            pdf = create_pdf_report(target, results)
+            print(f"\n✔ PDF Report : {pdf}")
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+
+        return html_path

@@ -14,7 +14,7 @@ from core.engine import ScanEngine
 from core.reporter import ReportGenerator
 from core.scorer import OverallScore
 
-
+console = Console()
 
 
 def check_target(url):
